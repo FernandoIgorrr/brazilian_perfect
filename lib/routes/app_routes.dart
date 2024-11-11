@@ -15,7 +15,7 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> routes = {
     splashscreen: (context) => const SplashScreen(),
-    homeScreen: (context) => HomeScreen(),
+    homeScreen: (context) => const HomeScreen(),
     createTournamentScreen: (context) => const CreateTournamentScreen(),
     initialRoute: (context) => const SplashScreen()
   };

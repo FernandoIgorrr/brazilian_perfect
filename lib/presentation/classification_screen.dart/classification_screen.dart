@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class ClassificationScreen extends StatefulWidget {
   final Tournament tournament;
 
-  ClassificationScreen({super.key, required this.tournament});
+  const ClassificationScreen({super.key, required this.tournament});
 
   @override
   State<ClassificationScreen> createState() => _ClassificationScreenState();

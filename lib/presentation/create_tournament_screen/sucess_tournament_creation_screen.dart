@@ -62,7 +62,7 @@ class SucessTournamentCreationScreen extends StatelessWidget {
                   Navigator.pushAndRemoveUntil<void>(
                       context,
                       MaterialPageRoute<void>(
-                          builder: (BuildContext context) => HomeScreen()),
+                          builder: (BuildContext context) => const HomeScreen()),
                       ModalRoute.withName('/'))
                 },
               ),

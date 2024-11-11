@@ -1,4 +1,4 @@
-import 'package:brazilian_perfect/core/tuple.dart';
+import 'package:brazilian_perfect/core/chess_tuple.dart';
 import 'package:brazilian_perfect/exceptions/last_round_missing_results.dart';
 import 'package:brazilian_perfect/exceptions/player_not_found_excpetion.dart';
 import 'package:brazilian_perfect/exceptions/tournament_max_rounds_exception.dart';

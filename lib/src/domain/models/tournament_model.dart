@@ -51,21 +51,15 @@ class TournamentModel extends Equatable {
         rounds: <RoundModel>[]);
   }
 
-  setId(int value) {
-    id = value;
-  }
+  set setId(int value) => id = value;
 
-  setName(String value) {
-    name = value;
-  }
+  set setName(String value) => name = value;
 
-  setDate(DateTime value) {
-    date = value;
-  }
+  set setDate(DateTime value) => date = value;
 
-  setType(String value) {
-    type = value;
-  }
+  set setType(String value) => type = value;
+
+  set setMaxNumRounds(int value) => maxNumRounds = value;
 
   void addParticipant(PlayerModel player) {
     players.add(player);
@@ -86,11 +80,11 @@ class TournamentModel extends Equatable {
 
   bool get minFilledDatas => name.isNotEmpty && type.isNotEmpty;
 
-  int get numberOfPlayers => players.length;
+  int get getNumberOfPlayers => players.length;
 
   bool get canAddMorePlayers => status == Status.criado;
 
-  bool get canItBeStarted => (numberOfPlayers > 2);
+  bool get canItBeStarted => (getNumberOfPlayers > 2);
 
   /// Método que mapeia o ID do jogador existente para o próprio objeto
   Map<int, PlayerModel> _mapCompetitorsById() {
@@ -140,12 +134,11 @@ class TournamentModel extends Equatable {
         id: rounds.length, number: rounds.length + 1, games: <GameModel>[]);
 
     final pairedPlayers = <PlayerModel>{};
-    List<GameModel> gamesAux = <GameModel>[];
+    //List<GameModel> gamesAux = <GameModel>[];
 
     if (rounds.isEmpty) {
       players.shuffle();
     }
-    bool notPaired = true;
 
     if (haveBye) {
       if (rounds.isNotEmpty) {
@@ -154,106 +147,108 @@ class TournamentModel extends Equatable {
       }
       round.notPaired = players.last;
     }
-    while (notPaired) {
-      for (int i = 0; i < players.length - 1; i++) {
-        final player1 = players[i];
+    for (int i = 0; i < players.length - 1; i++) {
+      final player1 = players[i];
 
-        if (pairedPlayers.contains(player1)) continue;
+      if (pairedPlayers.contains(player1)) continue;
 
-        for (int j = i + 1; j < players.length; j++) {
-          final player2 = players[j];
-          if (pairedPlayers.contains(player2)) continue;
+      for (int j = i + 1; j < players.length; j++) {
+        final player2 = players[j];
+        if (pairedPlayers.contains(player2)) continue;
 
-          // Evita repetição de adversários
-          if (!alreadyPlayed(player1, player2)) {
-            ChessTuple chessTuple = chooseWhoIsBlackOrWhite(player1, player2);
+        // Evita repetição de adversários
+        if (!alreadyPlayed(player1, player2)) {
+          ChessTuple chessTuple = chooseWhoIsBlackOrWhite(player1, player2);
 
-            round.games.add(GameModel(
-              id: round.games.length,
-              table: round.games.length + 1,
-              white: chessTuple.white,
-              black: chessTuple.black,
-            ));
+          round.games.add(GameModel(
+            id: round.games.length,
+            table: round.games.length + 1,
+            white: chessTuple.white,
+            black: chessTuple.black,
+          ));
 
-            pairedPlayers.add(player1);
-            pairedPlayers.add(player2);
-            break;
-          }
-        }
-      }
-
-      if (pairedPlayers.length != players.length) {
-        pairedPlayers.clear();
-        round.games.clear();
-        if (haveBye) {
-          if (rounds.isNotEmpty) {
-            sortNextByePlayer();
-            pairedPlayers.add(players.last);
-          }
-          round.notPaired = players.last;
-        }
-        players.shuffle();
-      } else {
-        notPaired = false;
-        round.games.sort(
-          (a, b) => (b.white.score + b.black.score)
-              .compareTo(a.white.score + a.black.score),
-        );
-        for (int i = 0; i < round.games.length; i++) {
-          round.games[i].table = 1 + i;
+          pairedPlayers.add(player1);
+          pairedPlayers.add(player2);
+          break;
         }
       }
     }
+    if (pairedPlayers.length != players.length) {
+      round = bestShufflePairing();
+    }
+
     rounds.add(round);
   }
 
-  RoundModel exceptionRoundCalculator() {
+  RoundModel bestShufflePairing() {
     final pairedPlayers = <PlayerModel>{};
-    List<GameModel> games = <GameModel>[];
-    RoundModel round =
-        RoundModel(id: rounds.length, number: rounds.length + 1, games: games);
+    final List<Map<String, dynamic>> scoreRounds = <Map<String, dynamic>>[];
+
+    RoundModel round = RoundModel(
+        id: rounds.length, number: rounds.length + 1, games: <GameModel>[]);
+    bool notPaired;
     int count = 0;
-
-    if (haveBye) {
-      if (rounds.isNotEmpty) {
-        sortNextByePlayer();
-        pairedPlayers.add(players.last);
-      }
-      round.notPaired = players.last;
-    }
-
-    players.shuffle();
-
     while (count < 100) {
-      for (int i = 0; i < players.length - 1; i++) {
-        final player1 = players[i];
+      notPaired = true;
+      while (notPaired) {
+        for (int i = 0; i < players.length - 1; i++) {
+          final player1 = players[i];
 
-        if (pairedPlayers.contains(player1)) continue;
+          if (pairedPlayers.contains(player1)) continue;
 
-        for (int j = i + 1; j < players.length; j++) {
-          final player2 = players[j];
-          if (pairedPlayers.contains(player2)) continue;
+          for (int j = i + 1; j < players.length; j++) {
+            final player2 = players[j];
+            if (pairedPlayers.contains(player2)) continue;
 
-          // Evita repetição de adversários
-          if (!alreadyPlayed(player1, player2)) {
-            ChessTuple chessTuple = chooseWhoIsBlackOrWhite(player1, player2);
+            // Evita repetição de adversários
+            if (!alreadyPlayed(player1, player2)) {
+              ChessTuple chessTuple = chooseWhoIsBlackOrWhite(player1, player2);
 
-            games.add(GameModel(
-              id: rounds.last.games.length,
-              table: rounds.last.games.length + 1,
-              white: chessTuple.white,
-              black: chessTuple.black,
-            ));
+              round.games.add(GameModel(
+                id: round.games.length,
+                table: round.getGames.length + 1,
+                white: chessTuple.white,
+                black: chessTuple.black,
+              ));
 
-            pairedPlayers.add(player1);
-            pairedPlayers.add(player2);
-            break;
+              pairedPlayers.add(player1);
+              pairedPlayers.add(player2);
+              break;
+            }
           }
         }
+        if (pairedPlayers.length != players.length) {
+          pairedPlayers.clear();
+          round.games.clear();
+          if (haveBye) {
+            sortNextByePlayer();
+            pairedPlayers.add(players.last);
+            round.notPaired = players.last;
+          }
+          players.shuffle();
+        } else {
+          notPaired = false;
+          round.games.sort((a, b) {
+            if (a.whoHasTheMostScore.score != b.whoHasTheMostScore.score) {
+              return b.whoHasTheMostScore.score.compareTo(a
+                  .whoHasTheMostScore.score); // Ordem decrescente por pontuação
+            }
+            return b.whoHasTheMostScore.score.compareTo(
+                a.whoHasTheMostScore.score); // Desempate por Buchholz
+          });
+          for (int i = 0; i < round.getGames.length; i++) {
+            round.games[i].table = 1 + i;
+          }
+          scoreRounds.add({
+            'score': calculateErro(round.getGames),
+            'round': round.copyWith()
+          });
+          count++;
+        }
       }
-      if (pairedPlayers.length == players.length) {}
     }
-    return round;
+    scoreRounds.sort((a, b) => a['score'].compareTo(b['score']));
+    return scoreRounds.first['round'];
   }
 
   bool get areLastRoundResultsFilled => rounds.last.games

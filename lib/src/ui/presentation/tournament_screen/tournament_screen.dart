@@ -211,15 +211,19 @@ class _TournamentScreenState extends State<TournamentScreen> {
                                     const SizedBox(height: 0),
                           ),
                   ),
-                  CustomElevatedButton(
-                    text: 'Classificação',
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ClassificationScreen(
-                                  tournament: tournament)));
-                    },
+                  Container(
+                    child: tournament.status == Status.acabado
+                        ? const SizedBox()
+                        : CustomElevatedButton(
+                            text: 'Classificação',
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => ClassificationScreen(
+                                          tournament: tournament)));
+                            },
+                          ),
                   ),
                   SizedBox(
                     height: 300.h,
@@ -350,10 +354,17 @@ class _TournamentScreenState extends State<TournamentScreen> {
       onPressed: tournament.canItBeStarted
           ? () async {
               if (tournament.type == 'round robin') {
+                tournament.setMaxNumRounds = tournament.getNumberOfPlayers - 1;
+                try {
+                  tournament.initiateTournament();
+                  tournamentManager.saveTournamentsOnLocalStorage();
+                } catch (e) {
+                  _buildSnackBarError(context, e.toString());
+                }
               } else {
                 await _buildShowDialogRoundsNum(context);
-                setState(() {});
               }
+              setState(() {});
             }
           : null,
     );
@@ -457,7 +468,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
   }
 
   _buildShowDialogRoundsNum(BuildContext context) async {
-    int minValue = (sqrt(tournament.numberOfPlayers) + 1).round();
+    int minValue = (sqrt(tournament.getNumberOfPlayers) + 1).round();
     int maxValue = tournament.players.length - 1;
     maxNumRoundsController = minValue;
     return showDialog(

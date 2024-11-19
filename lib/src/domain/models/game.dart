@@ -48,8 +48,13 @@ class GameModel {
     return null;
   }
 
-  PlayerModel get whoHasTheMostScore =>
-      (white.score >= black.score) ? white : black;
+  PlayerModel get whoHasTheMostScore => (white.score != black.score)
+      ? (white.score > black.score)
+          ? white
+          : black
+      : (white.buchholz >= black.buchholz)
+          ? white
+          : black;
 
   bool equals(GameModel game) {
     return (white == game.white || white == game.black) &&

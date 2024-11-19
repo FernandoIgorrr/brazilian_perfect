@@ -46,7 +46,7 @@ class TournamentManager {
   }
 
   void createTournament(TournamentModel tournament) {
-    tournament.setId(tournaments.length);
+    tournament.setId = tournaments.length;
     tournaments.add(tournament);
   }
 }

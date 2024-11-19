@@ -21,7 +21,5 @@
 
 - **Flutter**: Framework para desenvolvimento cross-platform.  
   - **Versão**: 3.24.4
-- **Dart**: Linguagem de programação usada pelo Flutter.  
-- **Gerenciamento de Estado**: (ex.: Provider, Riverpod, ou qualquer outra solução usada no app — inclua aqui).  
-
+- **Dart**: Linguagem de programação usada pelo Flutter.
 ---
